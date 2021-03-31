@@ -44,6 +44,8 @@ Este emulador está basado en estos recursos (lista no exhaustiva):
 - [The Game Boy: a hardware architecture](https://www.youtube.com/watch?v=RZUDEaLa5Nw)
 - [Memory mapping](http://gameboy.mongenel.com/dmg/asmmemmap.html)
 
+******
+
 ## EN
 In this repository you will find the progress done on the Gameboy emulator that I am developing live on my [Twitch channel](https://twitch.tv/AbdeCreativeDev).
 
