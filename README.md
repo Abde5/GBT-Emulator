@@ -1,5 +1,7 @@
 # GameBoy Twitch - Un emulador desarrollado totalmente en vivo desde Twitch
 
+![](https://pbs.twimg.com/media/EwjBnsWWYAYIw0o?format=jpg&name=medium)
+
 ## ES
 En este repositorio encontraréis el avance del emulador de Gameboy que desarrollamos en mi [canal de Twitch](https://twitch.tv/AbdeCreativeDev).
 
