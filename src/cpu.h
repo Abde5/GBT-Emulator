@@ -41,7 +41,14 @@ struct CPU {
 
     unsigned short SP;
     unsigned short PC;
+
+    unsigned short tick;
 };
+
+const unsigned char Z_flag;
+const unsigned char N_flag;
+const unsigned char H_flag;
+const unsigned char C_flag;
 
 // ------- FETCH - DECODE - EXECUTE LOOP functions -------
 unsigned char CPU_fetch(struct CPU*, struct MMU*);

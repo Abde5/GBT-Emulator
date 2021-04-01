@@ -25,26 +25,26 @@ int main(int argc, char *argv[]) {
     memcpy(mmu.mem,cartridge,TETRIS_SIZE);
 
     ///// CPU initialization //////
-    cpu.A = 0x00;
+    cpu.A = 0x05;
     cpu.F = 0x00;
     cpu.BC = 0;
+    cpu.B = 0x06;
     cpu.DE = 0;
-    cpu.HL = 0;
+    cpu.HL = 0x159;
 
     cpu.SP = 0;
     cpu.PC = 0x100;
+    cpu.tick= 0;
 
     //////////////////////////////
 
     // TESTING instructions
-    unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
+    //unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
 
-    printf("Next opcode: %x\n", next_opcode);
+    CPU_decode_execute(0xA6, &cpu, &mmu);
 
-    CPU_decode_execute(next_opcode, &cpu, &mmu);
-    printf("\nopcode with prefix: ");
-    CPU_decode_execute_prefix(0x9A, &cpu, &mmu);
-
-
+    printf("\nResult in A: %x", cpu.A);
+    printf("\nTicks: %d", cpu.tick);
+    printf("\nResult in F: %x", cpu.F);
     return  0;
 }

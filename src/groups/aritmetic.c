@@ -1,24 +1,69 @@
 #include "aritmetic.h"
 
+void Inc(unsigned char* A){
+        // Generic INC operation
+
+        (*A)++;
+}
+
 void Inc03(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC BC, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Inc03)");
+    (*cpu).BC++;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Inc04(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc04)");
+    unsigned char hilow_bit = (*cpu).B & (1 << 3);
+    Inc(&(*cpu).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0){
+            zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+        // verificar si ha cambiado de estado
+        if (((*cpu).B & (1 << 3)) == 0x0)
+            half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc0C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc0C)");
+    unsigned char hilow_bit = (*cpu).B & (1 << 3);
+    Inc(&(*cpu).C);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0){
+            zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+            // verificar si ha cambiado de estado
+            if (((*cpu).B & (1 << 3)) == 0x0)
+                    half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc13(struct CPU* cpu, struct MMU* mmu)
@@ -277,7 +322,13 @@ void Cpl2F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CPL, Length: 1
     // Cycles: 4, (Z N H C): - 1 1 -
-    printf("Not implemented! (Cpl2F)");
+    (*cpu).A = ~(*cpu).A;
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    (*cpu).F = (N_flag | H_flag) | ((*cpu).F & (Z_flag | C_flag));
 }
 
 void Scf37(struct CPU* cpu, struct MMU* mmu)
@@ -483,193 +534,496 @@ void SbcDE(struct CPU* cpu, struct MMU* mmu)
     printf("Not implemented! (SbcDE)");
 }
 
+
+void And(unsigned char* A, unsigned char* B){
+    // Generic AND operation
+
+    (*A) = (*A) & (*B);
+}
+
 void AndA0(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA0)");
+
+    And(&(*cpu).A,&(*cpu).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+        zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA1)");
+    And(&(*cpu).A,&(*cpu).C);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA2(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA2)");
+    And(&(*cpu).A,&(*cpu).D);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA3(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA3)");
+    And(&(*cpu).A,&(*cpu).E);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA4(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA4)");
+    And(&(*cpu).A,&(*cpu).H);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA5)");
+    And(&(*cpu).A,&(*cpu).L);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA6)");
+
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
+    // fetch from memory
+    And(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA7(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndA7)");
+    And(&(*cpu).A,&(*cpu).A);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndE6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND d8, Length: 2
     // Cycles: 8, (Z N H C): Z 0 1 0
-    printf("Not implemented! (AndE6)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
+    // fetch from memory
+    And(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
+}
+
+void Xor(unsigned char* A, unsigned char* B){
+        // Generic XOR operation
+
+        (*A) = (*A) ^ (*B);
 }
 
 void XorA8(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorA8)");
+    Xor(&(*cpu).A,&(*cpu).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorA9(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorA9)");
+    Xor(&(*cpu).A,&(*cpu).C);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAA(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAA)");
+    Xor(&(*cpu).A,&(*cpu).D);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAB(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAB)");
+    Xor(&(*cpu).A,&(*cpu).E);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAC(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAC)");
+    Xor(&(*cpu).A,&(*cpu).H);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAD(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAD)");
+    Xor(&(*cpu).A,&(*cpu).L);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAE(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAE)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
+    // fetch from memory
+    Xor(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorAF(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorAF)");
+    Xor(&(*cpu).A,&(*cpu).A);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void XorEE(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR d8, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (XorEE)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
+    // fetch from memory
+    Xor(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
+}
+
+void Or(unsigned char* A, unsigned char* B){
+        // Generic OR operation
+
+        (*A) = (*A) | (*B);
 }
 
 void OrB0(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB0)");
+    Or(&(*cpu).A,&(*cpu).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB1)");
+    Or(&(*cpu).A,&(*cpu).C);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB2(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB2)");
+    Or(&(*cpu).A,&(*cpu).D);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB3(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB3)");
+    Or(&(*cpu).A,&(*cpu).E);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB4(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB4)");
+    Or(&(*cpu).A,&(*cpu).H);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB5)");
+    Or(&(*cpu).A,&(*cpu).L);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB6)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
+    // fetch from memory
+    Or(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrB7(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrB7)");
+    Or(&(*cpu).A,&(*cpu).A);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void OrF6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR d8, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (OrF6)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
+    // fetch from memory
+    Or(&(*cpu).A,&mem_byte);
+
+    // update timer
+    (*cpu).tick+=8;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+            zero = Z_flag;
+
+    (*cpu).F = zero;
 }
 
 void CpB8(struct CPU* cpu, struct MMU* mmu)
@@ -724,7 +1078,6 @@ void CpBE(struct CPU* cpu, struct MMU* mmu)
 void CpBF(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP A, Length: 1
-    // Cycles: 4, (Z N H C): Z 1 H C
     printf("Not implemented! (CpBF)");
 }
 
