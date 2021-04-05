@@ -1,9 +1,9 @@
 #include "aritmetic.h"
 
 void Inc(unsigned char* A){
-        // Generic INC operation
+    // Generic INC operation
 
-        (*A)++;
+    (*A)++;
 }
 
 void Inc03(struct CPU* cpu, struct MMU* mmu)
@@ -28,7 +28,7 @@ void Inc04(struct CPU* cpu, struct MMU* mmu)
 
     // update flags
     unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0){
+    if ((*cpu).B == 0x0){
             zero = Z_flag;
     }
     unsigned char half_carry = 0x0;
@@ -45,7 +45,7 @@ void Inc0C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).B & (1 << 3);
+    unsigned char hilow_bit = (*cpu).C & (1 << 3);
     Inc(&(*cpu).C);
 
     // update timer
@@ -53,13 +53,13 @@ void Inc0C(struct CPU* cpu, struct MMU* mmu)
 
     // update flags
     unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0){
+    if ((*cpu).C == 0x0){
             zero = Z_flag;
     }
     unsigned char half_carry = 0x0;
     if (hilow_bit == 1<<3){
             // verificar si ha cambiado de estado
-            if (((*cpu).B & (1 << 3)) == 0x0)
+            if (((*cpu).C & (1 << 3)) == 0x0)
                     half_carry = H_flag;
     }
 
@@ -70,147 +70,433 @@ void Inc13(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC DE, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Inc13)");
+   (*cpu).DE++;
+
+   // update timer
+   (*cpu).tick+=8;
 }
 
 void Inc14(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc14)");
+     unsigned char hilow_bit = (*cpu).D & (1 << 3);
+     Inc(&(*cpu).D);
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char zero = 0x0;
+     if ((*cpu).D == 0x0){
+          zero = Z_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (hilow_bit == 1<<3){
+          // verificar si ha cambiado de estado
+          if (((*cpu).D & (1 << 3)) == 0x0)
+               half_carry = H_flag;
+     }
+
+     (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc1C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc1C)");
+    unsigned char hilow_bit = (*cpu).E & (1 << 3);
+    Inc(&(*cpu).E);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).E == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+         // verificar si ha cambiado de estado
+         if (((*cpu).E & (1 << 3)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc23(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC HL, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Inc23)");
+    (*cpu).HL++;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Inc24(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc24)");
+    unsigned char hilow_bit = (*cpu).H & (1 << 3);
+    Inc(&(*cpu).H);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).H == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+         // verificar si ha cambiado de estado
+         if (((*cpu).H & (1 << 3)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc2C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc2C)");
+    unsigned char hilow_bit = (*cpu).L & (1 << 3);
+    Inc(&(*cpu).L);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).L == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+         // verificar si ha cambiado de estado
+         if (((*cpu).L & (1 << 3)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc33(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC SP, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Inc33)");
+    (*cpu).SP++;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Inc34(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC (HL), Length: 1
     // Cycles: 12, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc34)");
+
+    unsigned char read_byte = mmu_read(mmu, (*cpu).HL);
+    unsigned char hilow_bit = read_byte & (1 << 3);
+    Inc(&read_byte);
+
+    // update timer
+    (*cpu).tick+=12;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if (read_byte == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+         // verificar si ha cambiado de estado
+         if ((read_byte & (1 << 3)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+
+    mmu_write(mmu, (*cpu).HL, read_byte);
 }
 
 void Inc3C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    printf("Not implemented! (Inc3C)");
+    unsigned char hilow_bit = (*cpu).A & (1 << 3);
+    Inc(&(*cpu).A);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<3){
+         // verificar si ha cambiado de estado
+         if (((*cpu).A & (1 << 3)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+}
+
+void Dec(unsigned char* A){
+     // Generic DEC operation
+
+     (*A)--;
 }
 
 void Dec05(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC B, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec05)");
+    unsigned char hilow_bit = (*cpu).B & (1 << 4);
+    Dec(&(*cpu).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).B == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).B & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec0B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC BC, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Dec0B)");
+    (*cpu).BC--;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Dec0D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC C, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec0D)");
+    unsigned char hilow_bit = (*cpu).C & (1 << 4);
+    Dec(&(*cpu).C);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).C == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).C & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec15(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC D, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec15)");
+    unsigned char hilow_bit = (*cpu).D & (1 << 4);
+    Dec(&(*cpu).D);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).D == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).D & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec1B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC DE, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Dec1B)");
+    (*cpu).DE--;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Dec1D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC E, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec1D)");
+    unsigned char hilow_bit = (*cpu).E & (1 << 4);
+    Dec(&(*cpu).E);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).E == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).E & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec25(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC H, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec25)");
+    unsigned char hilow_bit = (*cpu).H & (1 << 4);
+    Dec(&(*cpu).H);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).H == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).H & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec2B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC HL, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Dec2B)");
+    (*cpu).HL--;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Dec2D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC L, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec2D)");
+    unsigned char hilow_bit = (*cpu).L & (1 << 4);
+    Dec(&(*cpu).L);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).L == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).L & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec35(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC (HL), Length: 1
     // Cycles: 12, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec35)");
+     unsigned char read_byte = mmu_read(mmu, (*cpu).HL);
+     unsigned char hilow_bit = read_byte & (1 << 4);
+     Dec(&read_byte);
+
+     // update timer
+     (*cpu).tick+=12;
+
+     // update flags
+     unsigned char zero = 0x0;
+     if (read_byte == 0x0){
+          zero = Z_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (hilow_bit == 1<<4){
+          // verificar si ha cambiado de estado
+          if ((read_byte & (1 << 4)) == 0x0)
+               half_carry = H_flag;
+     }
+
+     (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+
+     mmu_write(mmu, (*cpu).HL, read_byte);
 }
 
 void Dec3B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC SP, Length: 1
     // Cycles: 8, (Z N H C): - - - -
-    printf("Not implemented! (Dec3B)");
+    (*cpu).SP--;
+
+    // update timer
+    (*cpu).tick+=8;
 }
 
 void Dec3D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC A, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    printf("Not implemented! (Dec3D)");
+    unsigned char hilow_bit = (*cpu).A & (1 << 4);
+    Dec(&(*cpu).A);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0){
+         zero = Z_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).A & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Add09(struct CPU* cpu, struct MMU* mmu)
@@ -241,11 +527,37 @@ void Add39(struct CPU* cpu, struct MMU* mmu)
     printf("Not implemented! (Add39)");
 }
 
+
+void Add_8(unsigned char* A, unsigned char* B) {
+     (*A) += (*B);
+}
+
 void Add80(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add80)");
+    /*
+    //unsigned char hilow_bit = (*cpu).L & (1 << 4);
+    Add_8(&(*CPU).A,&(*CPU).B);
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).L == 0x0){
+         zero = Z_flag;
+    }
+
+    unsigned char half_carry = 0x0;
+    if (hilow_bit == 1<<4){
+         // verificar si ha cambiado de estado
+         if (((*cpu).L & (1 << 4)) == 0x0)
+              half_carry = H_flag;
+    }
+
+    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    */
 }
 
 void Add81(struct CPU* cpu, struct MMU* mmu)
@@ -648,6 +960,7 @@ void AndA6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 1 0
+
 
     unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
     // fetch from memory
