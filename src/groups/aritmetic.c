@@ -1,9 +1,27 @@
 #include "aritmetic.h"
 
-void Inc(unsigned char* A){
-    // Generic INC operation
+void Inc(unsigned char* reg, struct CPU* cpu, struct MMU* mmu){
+     // Generic INC operation
+     unsigned char hilow_bit = *reg & (1 << 3);
 
-    (*A)++;
+     (*reg)++;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char zero = 0x0;
+     if (*reg == 0x0){
+          zero = Z_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (hilow_bit == 1<<3){
+          // verificar si ha cambiado de estado
+          if ((*reg & (1 << 3)) == 0x0)
+               half_carry = H_flag;
+     }
+
+     (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
 }
 
 void Inc03(struct CPU* cpu, struct MMU* mmu)
@@ -20,50 +38,14 @@ void Inc04(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).B & (1 << 3);
-    Inc(&(*cpu).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).B == 0x0){
-            zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-        // verificar si ha cambiado de estado
-        if (((*cpu).B & (1 << 3)) == 0x0)
-            half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).B, cpu, mmu);
 }
 
 void Inc0C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).C & (1 << 3);
-    Inc(&(*cpu).C);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).C == 0x0){
-            zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-            // verificar si ha cambiado de estado
-            if (((*cpu).C & (1 << 3)) == 0x0)
-                    half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).C, cpu, mmu);
 }
 
 void Inc13(struct CPU* cpu, struct MMU* mmu)
@@ -80,50 +62,14 @@ void Inc14(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-     unsigned char hilow_bit = (*cpu).D & (1 << 3);
-     Inc(&(*cpu).D);
-
-     // update timer
-     (*cpu).tick+=4;
-
-     // update flags
-     unsigned char zero = 0x0;
-     if ((*cpu).D == 0x0){
-          zero = Z_flag;
-     }
-     unsigned char half_carry = 0x0;
-     if (hilow_bit == 1<<3){
-          // verificar si ha cambiado de estado
-          if (((*cpu).D & (1 << 3)) == 0x0)
-               half_carry = H_flag;
-     }
-
-     (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).D, cpu, mmu);
 }
 
 void Inc1C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).E & (1 << 3);
-    Inc(&(*cpu).E);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).E == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-         // verificar si ha cambiado de estado
-         if (((*cpu).E & (1 << 3)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).E, cpu, mmu);
 }
 
 void Inc23(struct CPU* cpu, struct MMU* mmu)
@@ -140,50 +86,14 @@ void Inc24(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).H & (1 << 3);
-    Inc(&(*cpu).H);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).H == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-         // verificar si ha cambiado de estado
-         if (((*cpu).H & (1 << 3)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).H, cpu, mmu);
 }
 
 void Inc2C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).L & (1 << 3);
-    Inc(&(*cpu).L);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).L == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-         // verificar si ha cambiado de estado
-         if (((*cpu).L & (1 << 3)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).L, cpu, mmu);
 }
 
 void Inc33(struct CPU* cpu, struct MMU* mmu)
@@ -202,25 +112,7 @@ void Inc34(struct CPU* cpu, struct MMU* mmu)
     // Cycles: 12, (Z N H C): Z 0 H -
 
     unsigned char read_byte = mmu_read(mmu, (*cpu).HL);
-    unsigned char hilow_bit = read_byte & (1 << 3);
-    Inc(&read_byte);
-
-    // update timer
-    (*cpu).tick+=12;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if (read_byte == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-         // verificar si ha cambiado de estado
-         if ((read_byte & (1 << 3)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&read_byte, cpu, mmu);
 
     mmu_write(mmu, (*cpu).HL, read_byte);
 }
@@ -229,56 +121,38 @@ void Inc3C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: INC A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H -
-    unsigned char hilow_bit = (*cpu).A & (1 << 3);
-    Inc(&(*cpu).A);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<3){
-         // verificar si ha cambiado de estado
-         if (((*cpu).A & (1 << 3)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | zero | half_carry;
+    Inc(&(*cpu).A, cpu, mmu);
 }
 
-void Dec(unsigned char* A){
+void Dec(unsigned char* reg, struct CPU* cpu, struct MMU* mmu){
      // Generic DEC operation
 
-     (*A)--;
+     unsigned char hilow_bit = *reg & (1 << 4);
+     (*reg)--;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char zero = 0x0;
+     if (*reg == 0x0){
+          zero = Z_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (hilow_bit == 1<<4){
+          // verificar si ha cambiado de estado
+          if ((*reg & (1 << 4)) == 0x0)
+               half_carry = H_flag;
+     }
+
+     (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
 }
 
 void Dec05(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC B, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).B & (1 << 4);
-    Dec(&(*cpu).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).B == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).B & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).B, cpu, mmu);
 }
 
 void Dec0B(struct CPU* cpu, struct MMU* mmu)
@@ -295,50 +169,14 @@ void Dec0D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC C, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).C & (1 << 4);
-    Dec(&(*cpu).C);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).C == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).C & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).C, cpu, mmu);
 }
 
 void Dec15(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC D, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).D & (1 << 4);
-    Dec(&(*cpu).D);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).D == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).D & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).D, cpu, mmu);
 }
 
 void Dec1B(struct CPU* cpu, struct MMU* mmu)
@@ -355,50 +193,14 @@ void Dec1D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC E, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).E & (1 << 4);
-    Dec(&(*cpu).E);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).E == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).E & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).E, cpu, mmu);
 }
 
 void Dec25(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC H, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).H & (1 << 4);
-    Dec(&(*cpu).H);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).H == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).H & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).H, cpu, mmu);
 }
 
 void Dec2B(struct CPU* cpu, struct MMU* mmu)
@@ -415,53 +217,17 @@ void Dec2D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC L, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).L & (1 << 4);
-    Dec(&(*cpu).L);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).L == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).L & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).L, cpu, mmu);
 }
 
 void Dec35(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC (HL), Length: 1
     // Cycles: 12, (Z N H C): Z 1 H -
-     unsigned char read_byte = mmu_read(mmu, (*cpu).HL);
-     unsigned char hilow_bit = read_byte & (1 << 4);
-     Dec(&read_byte);
+    unsigned char read_byte = mmu_read(mmu, (*cpu).HL);
+    Dec(&read_byte, cpu, mmu);
 
-     // update timer
-     (*cpu).tick+=12;
-
-     // update flags
-     unsigned char zero = 0x0;
-     if (read_byte == 0x0){
-          zero = Z_flag;
-     }
-     unsigned char half_carry = 0x0;
-     if (hilow_bit == 1<<4){
-          // verificar si ha cambiado de estado
-          if ((read_byte & (1 << 4)) == 0x0)
-               half_carry = H_flag;
-     }
-
-     (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
-
-     mmu_write(mmu, (*cpu).HL, read_byte);
+    mmu_write(mmu, (*cpu).HL, read_byte);
 }
 
 void Dec3B(struct CPU* cpu, struct MMU* mmu)
@@ -478,25 +244,7 @@ void Dec3D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: DEC A, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H -
-    unsigned char hilow_bit = (*cpu).A & (1 << 4);
-    Dec(&(*cpu).A);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0){
-         zero = Z_flag;
-    }
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).A & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
+    Dec(&(*cpu).A, cpu, mmu);
 }
 
 void Add09(struct CPU* cpu, struct MMU* mmu)
@@ -847,10 +595,19 @@ void SbcDE(struct CPU* cpu, struct MMU* mmu)
 }
 
 
-void And(unsigned char* A, unsigned char* B){
+void And(unsigned char* A, unsigned char* B, struct CPU* cpu, struct MMU* mmu){
     // Generic AND operation
 
     (*A) = (*A) & (*B);
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char zero = 0x0;
+    if ((*cpu).A == 0x0)
+         zero = Z_flag;
+
+    (*cpu).F = zero | H_flag;
 }
 
 void AndA0(struct CPU* cpu, struct MMU* mmu)
@@ -858,140 +615,58 @@ void AndA0(struct CPU* cpu, struct MMU* mmu)
     // Mnemonic: AND B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
 
-    And(&(*cpu).A,&(*cpu).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-        zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+     And(&(*cpu).A,&(*cpu).B,cpu,mmu);
 }
 
 void AndA1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).C);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+     And(&(*cpu).A,&(*cpu).C,cpu,mmu);
 }
 
 void AndA2(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).D);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+    And(&(*cpu).A,&(*cpu).D,cpu,mmu);
 }
 
 void AndA3(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).E);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+    And(&(*cpu).A,&(*cpu).E,cpu,mmu);
 }
 
 void AndA4(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).H);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+    And(&(*cpu).A,&(*cpu).H,cpu,mmu);
 }
 
 void AndA5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).L);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+     And(&(*cpu).A,&(*cpu).L,cpu,mmu);
 }
 
 void AndA6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 1 0
-
-
     unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
     // fetch from memory
-    And(&(*cpu).A,&mem_byte);
-
-    // update timer
-    (*cpu).tick+=8;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+    And(&(*cpu).A,&mem_byte,cpu,mmu);
 }
 
 void AndA7(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: AND A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 1 0
-    And(&(*cpu).A,&(*cpu).A);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero | H_flag;
+     And(&(*cpu).A,&(*cpu).A,cpu,mmu);
 }
 
 void AndE6(struct CPU* cpu, struct MMU* mmu)
@@ -1000,125 +675,64 @@ void AndE6(struct CPU* cpu, struct MMU* mmu)
     // Cycles: 8, (Z N H C): Z 0 1 0
     unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
     // fetch from memory
-    And(&(*cpu).A,&mem_byte);
+    And(&(*cpu).A,&mem_byte,cpu,mmu);
+}
 
+void Xor(unsigned char* A, unsigned char* B, struct CPU* cpu, struct MMU* mmu){
+    // Generic XOR operation
+
+    (*A) = (*A) ^ (*B);
     // update timer
-    (*cpu).tick+=8;
+    (*cpu).tick+=4;
 
     // update flags
     unsigned char zero = 0x0;
     if ((*cpu).A == 0x0)
-            zero = Z_flag;
+         zero = Z_flag;
 
-    (*cpu).F = zero | H_flag;
-}
-
-void Xor(unsigned char* A, unsigned char* B){
-        // Generic XOR operation
-
-        (*A) = (*A) ^ (*B);
+    (*cpu).F = zero;
 }
 
 void XorA8(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).B,cpu,mmu);
 }
 
 void XorA9(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).C);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).C,cpu,mmu);
 }
 
 void XorAA(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).D);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).D,cpu,mmu);
 }
 
 void XorAB(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).E);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).E,cpu,mmu);
 }
 
 void XorAC(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).H);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).H,cpu,mmu);
 }
 
 void XorAD(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).L);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).L,cpu,mmu);
 }
 
 void XorAE(struct CPU* cpu, struct MMU* mmu)
@@ -1127,34 +741,14 @@ void XorAE(struct CPU* cpu, struct MMU* mmu)
     // Cycles: 8, (Z N H C): Z 0 0 0
     unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
     // fetch from memory
-    Xor(&(*cpu).A,&mem_byte);
-
-    // update timer
-    (*cpu).tick+=8;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&mem_byte,cpu,mmu);
 }
 
 void XorAF(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: XOR A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Xor(&(*cpu).A,&(*cpu).A);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Xor(&(*cpu).A,&(*cpu).A,cpu,mmu);
 }
 
 void XorEE(struct CPU* cpu, struct MMU* mmu)
@@ -1163,125 +757,64 @@ void XorEE(struct CPU* cpu, struct MMU* mmu)
     // Cycles: 8, (Z N H C): Z 0 0 0
     unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
     // fetch from memory
-    Xor(&(*cpu).A,&mem_byte);
+    Xor(&(*cpu).A,&mem_byte,cpu,mmu);
+}
+
+void Or(unsigned char* A, unsigned char* B, struct CPU* cpu, struct MMU* mmu){
+    // Generic OR operation
+    (*A) = (*A) | (*B);
 
     // update timer
-    (*cpu).tick+=8;
+    (*cpu).tick+=4;
 
     // update flags
     unsigned char zero = 0x0;
     if ((*cpu).A == 0x0)
-            zero = Z_flag;
+         zero = Z_flag;
 
     (*cpu).F = zero;
-}
-
-void Or(unsigned char* A, unsigned char* B){
-        // Generic OR operation
-
-        (*A) = (*A) | (*B);
 }
 
 void OrB0(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).B, cpu, mmu);
 }
 
 void OrB1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).C);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).C, cpu, mmu);
 }
 
 void OrB2(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).D);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).D, cpu, mmu);
 }
 
 void OrB3(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).E);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).E, cpu, mmu);
 }
 
 void OrB4(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).H);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).H, cpu, mmu);
 }
 
 void OrB5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).L);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).L, cpu, mmu);
 }
 
 void OrB6(struct CPU* cpu, struct MMU* mmu)
@@ -1289,35 +822,14 @@ void OrB6(struct CPU* cpu, struct MMU* mmu)
     // Mnemonic: OR (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 0 0 0
     unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
-    // fetch from memory
-    Or(&(*cpu).A,&mem_byte);
-
-    // update timer
-    (*cpu).tick+=8;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&mem_byte, cpu, mmu);
 }
 
 void OrB7(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: OR A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 0 0
-    Or(&(*cpu).A,&(*cpu).A);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&(*cpu).A, cpu, mmu);
 }
 
 void OrF6(struct CPU* cpu, struct MMU* mmu)
@@ -1325,18 +837,7 @@ void OrF6(struct CPU* cpu, struct MMU* mmu)
     // Mnemonic: OR d8, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
     unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
-    // fetch from memory
-    Or(&(*cpu).A,&mem_byte);
-
-    // update timer
-    (*cpu).tick+=8;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).A == 0x0)
-            zero = Z_flag;
-
-    (*cpu).F = zero;
+    Or(&(*cpu).A,&mem_byte, cpu, mmu);
 }
 
 void CpB8(struct CPU* cpu, struct MMU* mmu)
