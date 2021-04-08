@@ -1,4 +1,5 @@
 #include "aritmetic.h"
+#include <stdint.h>
 
 void Inc(unsigned char* reg, struct CPU* cpu, struct MMU* mmu){
      // Generic INC operation
@@ -276,71 +277,82 @@ void Add39(struct CPU* cpu, struct MMU* mmu)
 }
 
 
-void Add_8(unsigned char* A, unsigned char* B) {
-     (*A) += (*B);
+void Add_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {
+     // convert to unsigned short -> 16 bits
+     unsigned short A_16 = *A;
+     unsigned short B_16 = *B;
+
+     A_16 += B_16;
+
+     // bytes with only 4 lower bits
+     unsigned char A_4 = *A & 0x0F;
+     unsigned char B_4 = *B & 0x0F;
+
+     A_4 += B_4;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char carry = 0x0;
+     if ((A_16 & (1 << 8)) == (1 << 8)){
+          carry = C_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if ((A_4 & (1 << 4)) == (1 << 4)){
+          half_carry = H_flag;
+     }
+
+     *A += *B;
+
+     unsigned char zero = 0x0;
+     if (!(*A)){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = carry | half_carry | zero;
 }
 
 void Add80(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,B, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    /*
-    //unsigned char hilow_bit = (*cpu).L & (1 << 4);
-    Add_8(&(*CPU).A,&(*CPU).B);
-
-    // update timer
-    (*cpu).tick+=4;
-
-    // update flags
-    unsigned char zero = 0x0;
-    if ((*cpu).L == 0x0){
-         zero = Z_flag;
-    }
-
-    unsigned char half_carry = 0x0;
-    if (hilow_bit == 1<<4){
-         // verificar si ha cambiado de estado
-         if (((*cpu).L & (1 << 4)) == 0x0)
-              half_carry = H_flag;
-    }
-
-    (*cpu).F = ((*cpu).F & C_flag) | N_flag | zero | half_carry;
-    */
+    Add_8(&(*cpu).A, &(*cpu).B, cpu);
 }
 
 void Add81(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,C, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add81)");
+    Add_8(&(*cpu).A, &(*cpu).C, cpu);
 }
 
 void Add82(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,D, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add82)");
+    Add_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Add83(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,E, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add83)");
+    Add_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Add84(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,H, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add84)");
+    Add_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Add85(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,L, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add85)");
+    Add_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Add86(struct CPU* cpu, struct MMU* mmu)
@@ -354,7 +366,7 @@ void Add87(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: ADD A,A, Length: 1
     // Cycles: 4, (Z N H C): Z 0 H C
-    printf("Not implemented! (Add87)");
+    Add_8(&(*cpu).A, &(*cpu).A, cpu);
 }
 
 void AddC6(struct CPU* cpu, struct MMU* mmu)

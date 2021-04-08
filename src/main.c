@@ -25,10 +25,10 @@ int main(int argc, char *argv[]) {
     memcpy(mmu.mem,cartridge,TETRIS_SIZE);
 
     ///// CPU initialization //////
-    cpu.A = 0x05;
+    cpu.A = 0xF8;
     cpu.F = 0x00;
-    cpu.BC = 0;
-    cpu.B = 0x06;
+    //cpu.BC = 0;
+    cpu.B = 0x08;
     cpu.DE = 0;
     cpu.HL = 0x159;
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     // TESTING instructions
     //unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
 
-    CPU_decode_execute(0xA6, &cpu, &mmu);
+    CPU_decode_execute(0x80, &cpu, &mmu);
 
     printf("\nResult in A: %x", cpu.A);
     printf("\nTicks: %d", cpu.tick);
