@@ -25,12 +25,14 @@ int main(int argc, char *argv[]) {
     memcpy(mmu.mem,cartridge,TETRIS_SIZE);
 
     ///// CPU initialization //////
-    cpu.A = 0xF8;
-    cpu.F = 0x00;
+    cpu.A = 0xFF;
+    cpu.C = 0x01;
+    cpu.F = 0x10; // carry flag = 1
     //cpu.BC = 0;
-    cpu.B = 0x08;
-    cpu.DE = 0;
-    cpu.HL = 0x159;
+    //cpu.B = 0x08;
+    //cpu.DE = 0;
+    //cpu.HL = 0xFFFF;
+    //cpu.BC = 0x0001;
 
     cpu.SP = 0;
     cpu.PC = 0x100;
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
     // TESTING instructions
     //unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
 
-    CPU_decode_execute(0x80, &cpu, &mmu);
+    CPU_decode_execute(0x89, &cpu, &mmu);
 
     printf("\nResult in A: %x", cpu.A);
     printf("\nTicks: %d", cpu.tick);
