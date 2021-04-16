@@ -559,130 +559,198 @@ void AdcCE(struct CPU* cpu, struct MMU* mmu)
     (*cpu).tick += 4;
 }
 
+void Sub_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {
+    // bytes with only 4 lower bits
+    unsigned char A_4 = *A & 0x0F;
+    unsigned char B_4 = *B & 0x0F;
+
+    // update timer
+    (*cpu).tick+=4;
+
+    // update flags
+    unsigned char carry = 0x0;
+    if ((*B) > (*A)){
+        carry = C_flag;
+    }
+    unsigned char half_carry = 0x0;
+    if (B_4 > A_4){
+        half_carry = H_flag;
+    }
+
+    *A -= *B;
+
+    unsigned char zero = 0x0;
+    if (!(*A)){
+        zero = Z_flag;
+    }
+
+    (*cpu).F = carry | half_carry | zero | N_flag;
+}
+
 void Sub90(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB B, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub90)");
+    Sub_8(&(*cpu).A, &(*cpu).B, cpu);
 }
+
 
 void Sub91(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB C, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub91)");
+    Sub_8(&(*cpu).A, &(*cpu).C, cpu);
 }
 
 void Sub92(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB D, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub92)");
+    Sub_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Sub93(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB E, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub93)");
+    Sub_8(&(*cpu).A, &(*cpu).E, cpu);
 }
 
 void Sub94(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB H, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub94)");
+    Sub_8(&(*cpu).A, &(*cpu).H, cpu);
 }
 
 void Sub95(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB L, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub95)");
+    Sub_8(&(*cpu).A, &(*cpu).L, cpu);
 }
 
 void Sub96(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub96)");
+    unsigned char membyte = mmu_read(mmu,(*cpu).HL);
+    Sub_8(&(*cpu).A, &membyte, cpu);
+    (*cpu).tick += 4;
 }
 
 void Sub97(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB A, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sub97)");
+    Sub_8(&(*cpu).A, &(*cpu).A, cpu);
 }
 
 void SubD6(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SUB d8, Length: 2
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (SubD6)");
+    unsigned char membyte = mmu_read(mmu,(*cpu).PC++);
+    Sub_8(&(*cpu).A, &membyte, cpu);
+    (*cpu).tick += 4;
+}
+
+void Sbc_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {
+     // B with carry
+     unsigned char B_wc = *B + (((*cpu).F & C_flag) >> 4) ;
+
+     // bytes with only 4 lower bits
+     unsigned char A_4 = *A & 0x0F;
+     unsigned char B_4 = B_wc & 0x0F;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char carry = 0x0;
+     if (B_wc > (*A)){
+          carry = C_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (B_4 > A_4){
+          half_carry = H_flag;
+     }
+
+     *A -= B_wc;
+
+     unsigned char zero = 0x0;
+     if (!(*A)){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = carry | half_carry | zero | N_flag;
 }
 
 void Sbc98(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,B, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc98)");
+    Sbc_8(&(*cpu).A, &(*cpu).B, cpu);
 }
 
 void Sbc99(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,C, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc99)");
+    Sbc_8(&(*cpu).A, &(*cpu).C, cpu);
 }
 
 void Sbc9A(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,D, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9A)");
+    Sbc_8(&(*cpu).A, &(*cpu).D, cpu);
 }
 
 void Sbc9B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,E, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9B)");
+    Sbc_8(&(*cpu).A, &(*cpu).E, cpu);
 }
 
 void Sbc9C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,H, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9C)");
+    Sbc_8(&(*cpu).A, &(*cpu).H, cpu);
 }
 
 void Sbc9D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,L, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9D)");
+    Sbc_8(&(*cpu).A, &(*cpu).L, cpu);
 }
 
 void Sbc9E(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,(HL), Length: 1
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9E)");
+    unsigned char membyte = mmu_read(mmu,(*cpu).HL);
+    Sbc_8(&(*cpu).A, &membyte, cpu);
+    (*cpu).tick += 4;
 }
 
 void Sbc9F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,A, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (Sbc9F)");
+    Sbc_8(&(*cpu).A, &(*cpu).A, cpu);
 }
 
 void SbcDE(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SBC A,d8, Length: 2
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (SbcDE)");
+    unsigned char membyte = mmu_read(mmu,(*cpu).PC++);
+    Sbc_8(&(*cpu).A, &membyte, cpu);
+    (*cpu).tick += 4;
 }
 
 
@@ -931,65 +999,98 @@ void OrF6(struct CPU* cpu, struct MMU* mmu)
     Or(&(*cpu).A,&mem_byte, cpu, mmu);
 }
 
+void Cp_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {
+     // bytes with only 4 lower bits
+     unsigned char A_4 = *A & 0x0F;
+     unsigned char B_4 = *B & 0x0F;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char carry = 0x0;
+     if ((*B) > (*A)){
+          carry = C_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (B_4 > A_4){
+          half_carry = H_flag;
+     }
+
+     // modify value of A
+     unsigned char temp_A = (*A) - (*B);
+
+     unsigned char zero = 0x0;
+     if (!temp_A){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = carry | half_carry | zero | N_flag;
+}
+
 void CpB8(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP B, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpB8)");
+    Cp_8(&(*cpu).A,&(*cpu).B, cpu);
 }
 
 void CpB9(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP C, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpB9)");
+    Cp_8(&(*cpu).A,&(*cpu).C, cpu);
 }
 
 void CpBA(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP D, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpBA)");
+    Cp_8(&(*cpu).A,&(*cpu).D, cpu);
 }
 
 void CpBB(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP E, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpBB)");
+    Cp_8(&(*cpu).A,&(*cpu).E, cpu);
 }
 
 void CpBC(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP H, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpBC)");
+     Cp_8(&(*cpu).A,&(*cpu).H, cpu);
 }
 
 void CpBD(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP L, Length: 1
     // Cycles: 4, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpBD)");
+    Cp_8(&(*cpu).A,&(*cpu).L, cpu);
 }
 
 void CpBE(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP (HL), Length: 1
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpBE)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).HL);
+    Cp_8(&(*cpu).A,&mem_byte, cpu);
+    (*cpu).tick+=4;
 }
 
 void CpBF(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP A, Length: 1
-    printf("Not implemented! (CpBF)");
+    Cp_8(&(*cpu).A,&(*cpu).A, cpu);
 }
 
 void CpFE(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CP d8, Length: 2
     // Cycles: 8, (Z N H C): Z 1 H C
-    printf("Not implemented! (CpFE)");
+    unsigned char mem_byte = mmu_read(mmu,(*cpu).PC++);
+    Cp_8(&(*cpu).A,&mem_byte, cpu);
+    (*cpu).tick+=4;
 }
 
