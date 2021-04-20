@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     //cpu.BC = 0x0001;
 
     cpu.SP = 0;
-    cpu.PC = 0x100;
+    cpu.PC = 0x102;
     cpu.tick= 0;
 
     //////////////////////////////
@@ -43,10 +43,10 @@ int main(int argc, char *argv[]) {
     // TESTING instructions
     //unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
 
-    CPU_decode_execute(0xB8, &cpu, &mmu);
+    CPU_decode_execute(0x01, &cpu, &mmu);
 
-    printf("\nResult in A: %x", cpu.A);
+    printf("\nResult in BC: %x", cpu.BC);
     printf("\nTicks: %d", cpu.tick);
-    printf("\nResult in F: %x", cpu.F);
+    printf("\nResult in PC: %x", cpu.PC);
     return  0;
 }

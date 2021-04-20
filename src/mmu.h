@@ -17,6 +17,9 @@ struct MMU {
 };
 
 unsigned char mmu_read(struct MMU*, unsigned short);
-void mmu_write(struct MMU*, unsigned char, unsigned char);
+void mmu_write(struct MMU*, unsigned short, unsigned char);
+
+unsigned short mmu_read_16(struct MMU*, unsigned short);
+void mmu_write_16(struct MMU*, unsigned short, unsigned short);
 
 #endif
