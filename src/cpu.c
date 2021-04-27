@@ -11,9 +11,6 @@ const unsigned char H_flag = 0x1<<5;
 const unsigned char C_flag = 0x1<<4;
 
 unsigned char CPU_fetch(struct CPU* cpu, struct MMU* mmu){
-
-        printf("Fetch at address: %x\n", (*cpu).PC);
-
         return mmu_read(mmu, (*cpu).PC++);
 }
 

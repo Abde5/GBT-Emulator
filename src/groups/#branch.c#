@@ -184,7 +184,14 @@ void CallC4(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: CALL NZ,a16, Length: 3
     // Cycles: 24/12, (Z N H C): - - - -
-    printf("Not implemented! (CallC4)");
+    if (((*cpu).F & Z_flag) != Z_flag){
+         unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
+         (*cpu).PC = d16;
+         (*cpu).tick += 16;
+    } else {
+         (*cpu).PC += 2;
+         (*cpu).tick += 12;
+    }
 }
 
 void CallCC(struct CPU* cpu, struct MMU* mmu)
