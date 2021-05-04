@@ -711,16 +711,53 @@ void LdF2(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: LD A,($FF00+C), Length: 2
     // Cycles: 8, (Z N H C): - - - -
-     unsigned char d8 = mmu_read(mmu,0xFF00 + (unsigned short)(*cpu).C);
+    unsigned char d8 = mmu_read(mmu,0xFF00 + (unsigned short)(*cpu).C);
     Ld_8(&(*cpu).A,&d8, cpu);
     (*cpu).tick += 4;
+}
+
+void Add_16_8(unsigned short* A, unsigned char* B, struct CPU* cpu) {
+     // convert to unsigned short -> 16 bits
+     unsigned short A_16 = (*A) & 0x00FF;
+     unsigned short B_16 = *B;
+
+     A_16 += B_16;
+
+     // bytes with only 4 lower bits
+     unsigned char A_4 = *A & 0x0F;
+     unsigned char B_4 = *B & 0x0F;
+
+     A_4 += B_4;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char carry = 0x0;
+     if ((A_16 & (1 << 8)) == (1 << 8)){
+          carry = C_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if ((A_4 & (1 << 4)) == (1 << 4)){
+          half_carry = H_flag;
+     }
+
+     *A += *B;
+
+     (*cpu).F = carry | half_carry;
 }
 
 void LdF8(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: LD HL,SP+r8, Length: 2
     // Cycles: 12, (Z N H C): 0 0 H C
-    printf("Not implemented! (LdF8)");
+    unsigned char d8 = mmu_read(mmu,(*cpu).PC);
+    unsigned short sp_add = (*cpu).SP;
+
+    Add_16_8(&sp_add, &d8, cpu);
+
+    Ld_16(&(*cpu).HL,&sp_add, cpu);
+    (*cpu).tick += 4;
 }
 
 void LdF9(struct CPU* cpu, struct MMU* mmu)
@@ -742,13 +779,17 @@ void LdFA(struct CPU* cpu, struct MMU* mmu)
     (*cpu).tick += 16;
 }
 
+void Pop(unsigned short* reg, struct CPU* cpu, struct MMU* mmu) {
+     unsigned short d16 = mmu_read_16(mmu,(*cpu).SP);
+     *reg = d16;
+     (*cpu).SP += 2;
+}
+
 void PopC1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: POP BC, Length: 1
     // Cycles: 12, (Z N H C): - - - -
-    unsigned short d16 = mmu_read_16(mmu,(*cpu).SP);
-    (*cpu).BC = d16;
-    (*cpu).SP += 2;
+    Pop(&(*cpu).BC, cpu, mmu);
 
     (*cpu).tick += 12;
 }
@@ -757,9 +798,7 @@ void PopD1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: POP DE, Length: 1
     // Cycles: 12, (Z N H C): - - - -
-    unsigned short d16 = mmu_read_16(mmu,(*cpu).SP);
-    (*cpu).DE = d16;
-    (*cpu).SP += 2;
+    Pop(&(*cpu).DE, cpu, mmu);
 
     (*cpu).tick += 12;
 }
@@ -768,9 +807,7 @@ void PopE1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: POP HL, Length: 1
     // Cycles: 12, (Z N H C): - - - -
-    unsigned short d16 = mmu_read_16(mmu,(*cpu).SP);
-    (*cpu).HL = d16;
-    (*cpu).SP += 2;
+     Pop(&(*cpu).HL, cpu, mmu);
 
     (*cpu).tick += 12;
 }
@@ -779,19 +816,21 @@ void PopF1(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: POP AF, Length: 1
     // Cycles: 12, (Z N H C): Z N H C
-    unsigned short d16 = mmu_read_16(mmu,(*cpu).SP);
-    (*cpu).AF = d16;
-    (*cpu).SP += 2;
+    Pop(&(*cpu).AF, cpu, mmu);
 
     (*cpu).tick += 12;
+}
+
+void Push(unsigned short *reg, struct CPU* cpu, struct MMU* mmu){
+     mmu_write_16(mmu,(*cpu).SP-2, *reg);
+     (*cpu).SP -= 2;
 }
 
 void PushC5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: PUSH BC, Length: 1
     // Cycles: 16, (Z N H C): - - - -
-    mmu_write_16(mmu,(*cpu).SP-2, (*cpu).BC);
-    (*cpu).SP -= 2;
+    Push(&(*cpu).BC, cpu, mmu);
     (*cpu).tick += 16;
 }
 
@@ -799,8 +838,7 @@ void PushD5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: PUSH DE, Length: 1
     // Cycles: 16, (Z N H C): - - - -
-    mmu_write_16(mmu,(*cpu).SP-2, (*cpu).DE);
-    (*cpu).SP -= 2;
+    Push(&(*cpu).DE, cpu, mmu);
     (*cpu).tick += 16;
 }
 
@@ -808,8 +846,7 @@ void PushE5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: PUSH HL, Length: 1
     // Cycles: 16, (Z N H C): - - - -
-    mmu_write_16(mmu,(*cpu).SP-2, (*cpu).HL);
-    (*cpu).SP -= 2;
+    Push(&(*cpu).HL, cpu, mmu);
     (*cpu).tick += 16;
 }
 
@@ -817,8 +854,7 @@ void PushF5(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: PUSH AF, Length: 1
     // Cycles: 16, (Z N H C): - - - -
-    mmu_write_16(mmu,(*cpu).SP-2, (*cpu).AF);
-    (*cpu).SP -= 2;
+    Push(&(*cpu).AF, cpu, mmu);
     (*cpu).tick += 16;
 }
 
@@ -826,13 +862,18 @@ void LdhE0(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: LDH (a8),A, Length: 2
     // Cycles: 12, (Z N H C): - - - -
-    printf("Not implemented! (LdhE0)");
+    unsigned char d8 = mmu_read(mmu,(*cpu).PC++);
+    mmu_write(mmu, 0xFF00 + d8, (*cpu).A);
+    (*cpu).tick += 12;
 }
 
 void LdhF0(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: LDH A,(a8), Length: 2
     // Cycles: 12, (Z N H C): - - - -
-    printf("Not implemented! (LdhF0)");
+     unsigned char d8 = mmu_read(mmu,(*cpu).PC++);
+     unsigned char c8 = mmu_read(mmu,0xFF00 + d8);
+     (*cpu).A = c8;
+     (*cpu).tick += 12;
 }
 

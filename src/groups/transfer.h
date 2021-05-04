@@ -101,6 +101,7 @@ void LdFA(struct CPU* cpu, struct MMU* mmu);
 /*
  * POP operations.
  */
+void Pop(unsigned short *reg, struct CPU* cpu, struct MMU* mmu);
 void PopC1(struct CPU* cpu, struct MMU* mmu);
 void PopD1(struct CPU* cpu, struct MMU* mmu);
 void PopE1(struct CPU* cpu, struct MMU* mmu);
@@ -109,6 +110,7 @@ void PopF1(struct CPU* cpu, struct MMU* mmu);
 /*
  * PUSH operations.
  */
+void Push(unsigned short *reg, struct CPU* cpu, struct MMU* mmu);
 void PushC5(struct CPU* cpu, struct MMU* mmu);
 void PushD5(struct CPU* cpu, struct MMU* mmu);
 void PushE5(struct CPU* cpu, struct MMU* mmu);
