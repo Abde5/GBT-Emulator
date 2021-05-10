@@ -7,6 +7,7 @@
 /*
  * Rotate left through carry.
  */
+void Rlc(unsigned char* reg, struct CPU* cpu);
 void Rlc00(struct CPU* cpu, struct MMU* mmu);
 void Rlc01(struct CPU* cpu, struct MMU* mmu);
 void Rlc02(struct CPU* cpu, struct MMU* mmu);
@@ -19,6 +20,7 @@ void Rlc07(struct CPU* cpu, struct MMU* mmu);
 /*
  * Rotate right through carry.
  */
+void Rrc(unsigned char* reg, struct CPU* cpu);
 void Rrc08(struct CPU* cpu, struct MMU* mmu);
 void Rrc09(struct CPU* cpu, struct MMU* mmu);
 void Rrc0A(struct CPU* cpu, struct MMU* mmu);
@@ -31,6 +33,7 @@ void Rrc0F(struct CPU* cpu, struct MMU* mmu);
 /*
  * Rotate left.
  */
+void Rl(unsigned char* reg, struct CPU* cpu);
 void Rl10(struct CPU* cpu, struct MMU* mmu);
 void Rl11(struct CPU* cpu, struct MMU* mmu);
 void Rl12(struct CPU* cpu, struct MMU* mmu);
@@ -43,6 +46,7 @@ void Rl17(struct CPU* cpu, struct MMU* mmu);
 /*
  * Rotate right.
  */
+void Rr(unsigned char* reg, struct CPU* cpu);
 void Rr18(struct CPU* cpu, struct MMU* mmu);
 void Rr19(struct CPU* cpu, struct MMU* mmu);
 void Rr1A(struct CPU* cpu, struct MMU* mmu);

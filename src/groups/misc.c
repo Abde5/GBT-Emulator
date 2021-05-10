@@ -1,4 +1,5 @@
 #include "misc.h"
+#include "prefix.h"
 
 void Nop00(struct CPU* cpu, struct MMU* mmu)
 {
@@ -11,14 +12,16 @@ void Rlca07(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLCA, Length: 1
     // Cycles: 4, (Z N H C): 0 0 0 C
-    printf("Not implemented! (Rlca07)");
+    Rlc(&(*cpu).A, cpu);
+    (*cpu).tick += 4;
 }
 
 void Rrca0F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRCA, Length: 1
     // Cycles: 4, (Z N H C): 0 0 0 C
-    printf("Not implemented! (Rrca0F)");
+    Rrc(&(*cpu).A, cpu);
+    (*cpu).tick += 4;
 }
 
 void Stop10(struct CPU* cpu, struct MMU* mmu)
@@ -32,14 +35,16 @@ void Rla17(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLA, Length: 1
     // Cycles: 4, (Z N H C): 0 0 0 C
-    printf("Not implemented! (Rla17)");
+    Rl(&(*cpu).A, cpu);
+    (*cpu).tick += 4;
 }
 
 void Rra1F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRA, Length: 1
     // Cycles: 4, (Z N H C): 0 0 0 C
-    printf("Not implemented! (Rra1F)");
+    Rr(&(*cpu).A, cpu);
+    (*cpu).tick += 4;
 }
 
 void Halt76(struct CPU* cpu, struct MMU* mmu)

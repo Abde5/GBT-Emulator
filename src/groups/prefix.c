@@ -1,451 +1,679 @@
 #include "prefix.h"
 
+void Rlc(unsigned char* reg, struct CPU* cpu){
+     unsigned char msb = (*reg) & 0x80;
+     *reg = (*reg) << 1;
+
+     unsigned char carry = 0x00;
+     unsigned char zero = 0x00;
+
+     if (msb){
+          carry = C_flag;
+          *reg = (*reg) | 0x01;
+     }
+
+     if (*reg == 0){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = zero | carry;
+}
+
 void Rlc00(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc00)");
+    Rlc(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc01(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc01)");
+    Rlc(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc02(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc02)");
+    Rlc(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc03(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc03)");
+    Rlc(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc04(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc04)");
+    Rlc(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc05(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc05)");
+    Rlc(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rlc06(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc06)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Rlc(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Rlc07(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RLC A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rlc07)");
+    Rlc(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Rrc(unsigned char* reg, struct CPU* cpu){
+     unsigned char lsb = (*reg) & 0x01;
+     *reg = (*reg) >> 1;
+
+     unsigned char carry = 0x00;
+     unsigned char zero = 0x00;
+
+     if (lsb){
+          carry = C_flag;
+          *reg = (*reg) | 0x80;
+     }
+
+     if (*reg == 0){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = zero | carry;
 }
 
 void Rrc08(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc08)");
+    Rrc(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc09(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc09)");
+    Rrc(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc0A(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0A)");
+    Rrc(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc0B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0B)");
+    Rrc(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc0C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0C)");
+    Rrc(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc0D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0D)");
+    Rrc(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rrc0E(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0E)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Rlc(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Rrc0F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RRC A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rrc0F)");
+    Rrc(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Rl(unsigned char* reg, struct CPU* cpu){
+     unsigned char msb = (*reg) & 0x80;
+     *reg = (*reg) << 1;
+
+     unsigned char carry = 0x00;
+     unsigned char zero = 0x00;
+
+     if (msb){
+         carry = C_flag;
+     }
+
+     if((*cpu).F & C_flag){
+         *reg = (*reg) | 0x01;
+     }
+
+     if (*reg == 0){
+         zero = Z_flag;
+     }
+
+     (*cpu).F = zero | carry;
 }
 
 void Rl10(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl10)");
+    Rl(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl11(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl11)");
+    Rl(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl12(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl12)");
+    Rl(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl13(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl13)");
+    Rl(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl14(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl14)");
+    Rl(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl15(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl15)");
+    Rl(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rl16(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl16)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Rl(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Rl17(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RL A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rl17)");
+    Rl(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Rr(unsigned char* reg, struct CPU* cpu){
+    unsigned char lsb = (*reg) & 0x01;
+    *reg = (*reg) >> 1;
+
+    unsigned char carry = 0x00;
+    unsigned char zero = 0x00;
+
+    if (lsb){
+         carry = C_flag;
+    }
+
+    if((*cpu).F & C_flag){
+         *reg = (*reg) | 0x80;
+    }
+
+    if (*reg == 0){
+         zero = Z_flag;
+    }
+
+    (*cpu).F = zero | carry;
 }
 
 void Rr18(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr18)");
+    Rr(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr19(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr19)");
+    Rr(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr1A(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1A)");
+    Rr(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr1B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1B)");
+    Rr(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr1C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1C)");
+    Rr(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr1D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1D)");
+    Rr(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Rr1E(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1E)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Rr(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Rr1F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: RR A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Rr1F)");
+    Rr(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Sla(unsigned char* reg, struct CPU* cpu){
+     unsigned char msb = (*reg) & 0x80;
+     *reg = (*reg) << 1;
+
+     unsigned char carry = 0x00;
+     unsigned char zero = 0x00;
+
+     if (*reg == 0){
+          zero = Z_flag;
+     }
+
+     if (msb){
+          carry = C_flag;
+     }
+
+     (*cpu).F = zero | carry;
 }
 
 void Sla20(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla20)");
+    Sla(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla21(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla21)");
+    Sla(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla22(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla22)");
+    Sla(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla23(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla23)");
+    Sla(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla24(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla24)");
+    Sla(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla25(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla25)");
+    Sla(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sla26(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla26)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Sla(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Sla27(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SLA A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Sla27)");
+    Sla(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Sra(unsigned char* reg, struct CPU* cpu){
+     unsigned char lsb = (*reg) & 0x01;
+     unsigned char msb = (*reg) & 0x80;
+     *reg = ((*reg) >> 1) | msb;
+
+     unsigned char carry = 0x00;
+     unsigned char zero = 0x00;
+
+     if (*reg == 0){
+          zero = Z_flag;
+     }
+
+     if (lsb){
+          carry = C_flag;
+     }
+
+     (*cpu).F = zero | carry;
 }
 
 void Sra28(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA B, Length: 2
-    // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra28)");
+    // Cycles: 8, (Z N H C): Z 0 0 C
+    Sra(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra29(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA C, Length: 2
-    // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra29)");
+    // Cycles: 8, (Z N H C): Z 0 0 C
+    Sra(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra2A(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA D, Length: 2
-    // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2A)");
+    // Cycles: 8, (Z N H C): Z 0 0 C
+    Sra(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra2B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2B)");
+    Sra(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra2C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2C)");
+    Sra(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra2D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2D)");
+    Sra(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Sra2E(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2E)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Sra(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Sra2F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRA A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Sra2F)");
+    Sra(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Swap(unsigned char* reg, struct CPU* cpu){
+     unsigned char zero = 0x00;
+     *reg = (*reg) << 4 | (*reg) >> 4;
+
+     if (*reg == 0){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = zero ;
 }
 
 void Swap30(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap30)");
+    Swap(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Swap31(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap31)");
+    Swap(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Swap32(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap32)");
+    Swap(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Swap33(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap33)");
+    Swap(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Swap34(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap34)");
+     Swap(&(*cpu).H, cpu);
+     (*cpu).tick += 8;
 }
 
 void Swap35(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap35)");
+    Swap(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Swap36(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap36)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Swap(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 16;
 }
 
 void Swap37(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SWAP A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 0
-    printf("Not implemented! (Swap37)");
+    Swap(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
+}
+
+void Srl(unsigned char* reg, struct CPU* cpu){
+    unsigned char lsb = (*reg) & 0x01;
+    *reg = (*reg) >> 1;
+
+    unsigned char carry = 0x00;
+    unsigned char zero = 0x00;
+
+    if (*reg == 0){
+         zero = Z_flag;
+    }
+
+    if (lsb){
+         carry = C_flag;
+    }
+
+    (*cpu).F = zero | carry;
 }
 
 void Srl38(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL B, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl38)");
+    Srl(&(*cpu).B, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl39(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL C, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl39)");
+    Srl(&(*cpu).C, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl3A(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL D, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3A)");
+    Srl(&(*cpu).D, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl3B(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL E, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3B)");
+    Srl(&(*cpu).E, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl3C(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL H, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3C)");
+    Srl(&(*cpu).H, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl3D(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL L, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3D)");
+    Srl(&(*cpu).L, cpu);
+    (*cpu).tick += 8;
 }
 
 void Srl3E(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL (HL), Length: 2
     // Cycles: 16, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3E)");
+    unsigned char read_byte = mmu_read(mmu,(*cpu).HL);
+    Srl(&read_byte, cpu);
+    mmu_write(mmu, (*cpu).HL, read_byte);
+    (*cpu).tick += 8;
 }
 
 void Srl3F(struct CPU* cpu, struct MMU* mmu)
 {
     // Mnemonic: SRL A, Length: 2
     // Cycles: 8, (Z N H C): Z 0 0 C
-    printf("Not implemented! (Srl3F)");
+    Srl(&(*cpu).A, cpu);
+    (*cpu).tick += 8;
 }
 
 void Bit40(struct CPU* cpu, struct MMU* mmu)
