@@ -751,6 +751,9 @@ void CPU_decode_execute(unsigned char opcode, struct CPU* cpu, struct MMU* mmu){
         case 0xd9:
                 RetiD9(cpu,mmu);
                 break;
+        case 0xcb:
+             SetCB(cpu,mmu);
+             break;
         }
 }
 

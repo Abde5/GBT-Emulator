@@ -49,4 +49,10 @@ void DiF3(struct CPU* cpu, struct MMU* mmu);
  */
 void EiFB(struct CPU* cpu, struct MMU* mmu);
 
+/*
+ * Next instruction is prefixed.
+ */
+void PrefCB(struct CPU* cpu, struct MMU* mmu);
+
+
 #endif // MISC_H

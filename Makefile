@@ -10,5 +10,8 @@ default: gbt
 gbt: $(SRC) $(SRC_GROUP)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
+debug: $(SRC) $(SRC_GROUP)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS) -g -DDEBUG
+
 run: gbt
 	./gbt ../roms/Tetris\ \(W\)\ \(V1.1\).gb

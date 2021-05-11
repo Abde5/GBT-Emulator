@@ -1,11 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "tools.h"
 #include "cpu.h"
 #include "mmu.h"
 
+
 #define TETRIS_SIZE 32768
+
+void patches(struct CPU* cpu, struct MMU* mmu) {
+     if (cpu->PC == 0x0064) mmu_write(mmu, 0xff44, 0x90);
+     else if (cpu->PC == 0x0233) mmu_write(mmu, 0xff44, 0x94);
+     else if (cpu->PC == 0x2828) mmu_write(mmu, 0xff44, 0x91);
+}
 
 /*
  * Main routine of our program.
@@ -23,18 +31,14 @@ int main(int argc, char *argv[]) {
 
     // TETRIS copied into memory
     memcpy(mmu.mem,cartridge,TETRIS_SIZE);
-    // JR 0xFE
-    mmu_write(&mmu, 0x100, 0x18);
-    mmu_write(&mmu, 0x101, 0xFE);
-
 
     ///// CPU initialization //////
     cpu.A = 0x00;
-    cpu.B = 0x01;
+    cpu.B = 0x00;
     cpu.F = 0x00; // carry flag = 1
-    cpu.BC = 0x01;
-    cpu.DE = 0x02;
-    cpu.HL = 0x03;
+    cpu.BC = 0x00;
+    cpu.DE = 0x00;
+    cpu.HL = 0x00;
 
     cpu.SP = 0xE000;
     cpu.PC = 0x0100;
@@ -42,15 +46,22 @@ int main(int argc, char *argv[]) {
 
     //////////////////////////////
 
+    char* var;
     int instruction_nb = 0;
     // TESTING instructions
     while(1){
         instruction_nb ++;
+        printf("%x: ",cpu.PC);
         unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
+        //printf("%x: ",next_opcode);
         //printf("\nPC: %x", cpu.PC);
         //printf("\nDecoded instruction: %x", next_opcode);
         //printf("\nNumber of instruction: %x", instruction_nb);
         CPU_decode_execute(next_opcode, &cpu, &mmu);
+        usleep(30000);
+        printf("\n");
+        patches(&cpu,&mmu);
+        scanf(var);
     }
     //printf("\nResult in BC: %x", cpu.BC);
     //printf("\nResult in DE: %x", cpu.DE);
