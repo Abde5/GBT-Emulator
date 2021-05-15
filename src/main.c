@@ -51,20 +51,23 @@ int main(int argc, char *argv[]) {
     // TESTING instructions
     while(1){
         instruction_nb ++;
-        printf("%x: ",cpu.PC);
+        printf("%04x: ",cpu.PC);
         unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
+
+        printf("\t(opcode: %02x)\t",next_opcode);
         //printf("%x: ",next_opcode);
         //printf("\nPC: %x", cpu.PC);
         //printf("\nDecoded instruction: %x", next_opcode);
         //printf("\nNumber of instruction: %x", instruction_nb);
         CPU_decode_execute(next_opcode, &cpu, &mmu);
-        usleep(30000);
+        //usleep(10000);
         printf("\n");
+
+#ifdef DEBUG
+        printf("DEBUG: Value of HL: %04x\n", cpu.HL);
+#endif
+        //printf("\tB register: %x\n", cpu.B);
         patches(&cpu,&mmu);
-        scanf(var);
     }
-    //printf("\nResult in BC: %x", cpu.BC);
-    //printf("\nResult in DE: %x", cpu.DE);
-    //printf("\nResult in HL: %x", cpu.HL);
     return  0;
 }

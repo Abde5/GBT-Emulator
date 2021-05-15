@@ -22,7 +22,7 @@ void Jr20(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 12/8, (Z N H C): - - - -
     if (((*cpu).F & Z_flag) != Z_flag){
-         signed short d8 = mmu_read(mmu,(*cpu).PC);
+         signed char d8 = mmu_read(mmu,(*cpu).PC);
          (*cpu).PC += 1;
          (*cpu).PC += d8;
          (*cpu).tick += 12;
@@ -40,7 +40,7 @@ void Jr28(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 12/8, (Z N H C): - - - -
     if (((*cpu).F & Z_flag) == Z_flag){
-         signed short d8 = mmu_read(mmu,(*cpu).PC);
+         signed char d8 = mmu_read(mmu,(*cpu).PC);
          (*cpu).PC += 1;
          (*cpu).PC += d8;
          (*cpu).tick += 12;
@@ -58,7 +58,7 @@ void Jr30(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 12/8, (Z N H C): - - - -
     if (((*cpu).F & C_flag) != C_flag){
-         signed short d8 = mmu_read(mmu,(*cpu).PC);
+         signed char d8 = mmu_read(mmu,(*cpu).PC);
          (*cpu).PC += 1;
          (*cpu).PC += d8;
          (*cpu).tick += 12;
@@ -77,7 +77,7 @@ void Jr38(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 12/8, (Z N H C): - - - -
     if (((*cpu).F & C_flag) == C_flag){
-         signed short d8 = mmu_read(mmu,(*cpu).PC);
+         signed char  d8 = mmu_read(mmu,(*cpu).PC);
          (*cpu).PC += 1;
          (*cpu).PC += d8;
          (*cpu).tick += 12;
@@ -260,8 +260,9 @@ void CallC4(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 24/12, (Z N H C): - - - -
     if (((*cpu).F & Z_flag) != Z_flag){
-         Push(&(*cpu).PC, cpu, mmu);
          unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
+         (*cpu).PC += 2;
+         Push(&(*cpu).PC, cpu, mmu);
          (*cpu).PC = d16;
          (*cpu).tick += 24;
     } else {
@@ -279,8 +280,9 @@ void CallCC(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 24/12, (Z N H C): - - - -
     if (((*cpu).F & Z_flag) == Z_flag){
-         Push(&(*cpu).PC, cpu, mmu);
          unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
+         (*cpu).PC += 2;
+         Push(&(*cpu).PC, cpu, mmu);
          (*cpu).PC = d16;
          (*cpu).tick += 24;
     } else {
@@ -296,10 +298,10 @@ void CallCD(struct CPU* cpu, struct MMU* mmu)
     printf("CALL a16");
 #endif
     // Cycles: 24, (Z N H C): - - - -
-    Push(&(*cpu).PC, cpu, mmu);
     unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
-    (*cpu).PC = d16;
     (*cpu).PC += 2;
+    Push(&(*cpu).PC, cpu, mmu);
+    (*cpu).PC = d16;
 }
 
 void CallD4(struct CPU* cpu, struct MMU* mmu)
@@ -310,8 +312,9 @@ void CallD4(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 24/12, (Z N H C): - - - -
     if (((*cpu).F & C_flag) != C_flag){
-         Push(&(*cpu).PC, cpu, mmu);
          unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
+         (*cpu).PC += 2;
+         Push(&(*cpu).PC, cpu, mmu);
          (*cpu).PC = d16;
          (*cpu).tick += 24;
     } else {
@@ -328,8 +331,9 @@ void CallDC(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 24/12, (Z N H C): - - - -
     if (((*cpu).F & C_flag) == C_flag){
-         Push(&(*cpu).PC, cpu, mmu);
          unsigned short d16 = mmu_read_16(mmu,(*cpu).PC);
+         (*cpu).PC += 2;
+         Push(&(*cpu).PC, cpu, mmu);
          (*cpu).PC = d16;
          (*cpu).tick += 24;
     } else {

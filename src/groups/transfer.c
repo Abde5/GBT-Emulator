@@ -175,6 +175,7 @@ void Ld22(struct CPU* cpu, struct MMU* mmu)
 #ifdef DEBUG
     printf("LD (HL+),A");
 #endif
+
     // Cycles: 8, (Z N H C): - - - -
     mmu_write(mmu,(*cpu).HL++, (*cpu).A);
     (*cpu).tick += 8;
