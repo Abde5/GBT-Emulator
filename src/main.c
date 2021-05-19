@@ -1,3 +1,4 @@
+//#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +6,7 @@
 #include "tools.h"
 #include "cpu.h"
 #include "mmu.h"
+#include "ppu.h"
 
 
 #define TETRIS_SIZE 32768
@@ -45,7 +47,7 @@ int main(int argc, char *argv[]) {
     cpu.tick= 0;
 
     //////////////////////////////
-
+/*
     char* var;
     int instruction_nb = 0;
     // TESTING instructions
@@ -69,5 +71,8 @@ int main(int argc, char *argv[]) {
         //printf("\tB register: %x\n", cpu.B);
         patches(&cpu,&mmu);
     }
+*/
+
+    create_window();
     return  0;
 }

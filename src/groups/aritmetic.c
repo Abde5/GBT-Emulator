@@ -567,7 +567,11 @@ void Scf37(struct CPU* cpu, struct MMU* mmu)
     printf("SCF");
 #endif
     // Cycles: 4, (Z N H C): - 0 0 1
-    printf("Not implemented! (Scf37)");
+
+    // update timer
+    (*cpu).tick+=4;
+
+    (*cpu).F = ((*cpu).F & Z_flag) | C_flag;
 }
 
 void Ccf3F(struct CPU* cpu, struct MMU* mmu)
@@ -577,7 +581,12 @@ void Ccf3F(struct CPU* cpu, struct MMU* mmu)
     printf("CCF");
 #endif
     // Cycles: 4, (Z N H C): - 0 0 C
-    printf("Not implemented! (Ccf3F)");
+
+    // update timer
+    (*cpu).tick+=4;
+
+    unsigned char inv_Cflag = (~((*cpu).F & C_flag) & C_flag);
+    (*cpu).F = ((*cpu).F & Z_flag) | inv_Cflag;
 }
 
 void Adc_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {

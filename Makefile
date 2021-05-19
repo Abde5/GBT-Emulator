@@ -1,4 +1,4 @@
-LIBS  =
+LIBS  = -lmingw32 -lSDL2main -lSDL2
 CFLAGS = -Wall
 
 # Should be equivalent to your list of C files, if you don't build selectively

@@ -9,7 +9,7 @@ void Nop00(struct CPU* cpu, struct MMU* mmu)
     printf("NOP");
 #endif
     // Cycles: 4, (Z N H C): - - - -
-    printf("Not implemented! (Nop00)");
+    (*cpu).tick += 4;
 }
 
 void Rlca07(struct CPU* cpu, struct MMU* mmu)
