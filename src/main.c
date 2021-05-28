@@ -1,5 +1,6 @@
 //#include <SDL2/SDL.h>
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -28,6 +29,7 @@ void patches(struct CPU* cpu, struct MMU* mmu) {
 int main(int argc, char *argv[]) {
     unsigned char* cartridge = read_file(argv[1]);
 
+    struct PPU ppu;
     struct CPU cpu;
     struct MMU mmu;
 
@@ -73,6 +75,37 @@ int main(int argc, char *argv[]) {
     }
 */
 
-    create_window();
+//
+
+
+    unsigned int * new_background = calloc(256*256, sizeof(unsigned int));
+
+    ppu.SX = 0;
+    ppu.SY = 0;
+
+    // create cross in background
+    int i,j;
+    for(i = 0; i < 256; ++i)
+         for(j = 0; j < 256; ++j)
+              if((i == j) || (255-i == j)) new_background[j*256+i] = palette[0];
+
+    update_background(&ppu, new_background);
+
+    create_window(&ppu);
+
+    unsigned char pos = 0;
+
+    //while(1){
+        pos = 180;
+        ppu.SY = pos;
+        // frame
+        for(i = 0; i < 144; ++i){
+             //ppu.SX = (sin(i)+1)*4;
+             update_line(&ppu, i);
+        }
+        update_ppu(&ppu);
+        //sleep(3);
+        scanf(&i);
+        //}
     return  0;
 }

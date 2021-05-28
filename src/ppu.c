@@ -1,15 +1,17 @@
 #include "ppu.h"
+#include <string.h>
 
 #define SCALE 5
 
-SDL_Window* create_window(){
+unsigned int palette[4] = {0xffe0f8d0, 0xff88c070, 0xff346856, 0xff081820};
 
-     SDL_Window *window;
+
+void create_window(struct PPU* ppu){
 
      SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
      // Create an application window with the following settings:
-     window =SDL_CreateWindow(
+     (*ppu).window =SDL_CreateWindow(
           "GBT",                  // window title
           SDL_WINDOWPOS_UNDEFINED,           // initial x position
           SDL_WINDOWPOS_UNDEFINED,           // initial y position
@@ -17,47 +19,60 @@ SDL_Window* create_window(){
           144*SCALE,                               // height, in pixels
           SDL_WINDOW_OPENGL                  // flags - see below
           );
-     unsigned int palette[4] = {0xffe0f8d0, 0xff88c070, 0xff346856, 0xff081820};
 
-     unsigned int* pixels = calloc(160*144,sizeof(unsigned int));
+     memset((*ppu).pixels, 0x00, RES*sizeof(unsigned int));
 
-int i, j; for (i = 0; i < 144; ++i)
-               for (j = 0; j < 160; ++j)
-                    if (j < 40) pixels[i*160+j] = palette[0];
-                    else if (j < 80) pixels[i*160+j] = palette[1];
-                    else if (j < 120) pixels[i*160+j] = palette[2];
-                    else pixels[i*160+j] = palette[3];
+     (*ppu).renderer = SDL_CreateRenderer((*ppu).window, -1, 0);
 
-     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
-
-     SDL_RenderSetScale(renderer,
+     SDL_RenderSetScale((*ppu).renderer,
                         SCALE, SCALE);
 
-     SDL_Texture * texture = SDL_CreateTexture(renderer,
+     (*ppu).texture = SDL_CreateTexture((*ppu).renderer,
                                                SDL_PIXELFORMAT_ARGB8888,
                                                SDL_TEXTUREACCESS_STATIC,
                                                160,
                                                144);
-
-     if (window == NULL) {
+     if ((*ppu).window == NULL) {
           // In the case that the window could not be made...
           printf("Could not create window: %s\n", SDL_GetError());
-          return NULL;
      }
+}
 
-     SDL_UpdateTexture(texture, NULL, pixels, 160 * sizeof(Uint32));
-
-     SDL_RenderClear(renderer);
-     SDL_RenderCopy(renderer, texture, NULL, NULL);
-     SDL_RenderPresent(renderer);
-
-     SDL_Delay(30000);  // Pause execution for 3000 milliseconds, for example
-
+void destroy_ppu(struct PPU* ppu){
      // Close and destroy the window
-     SDL_DestroyWindow(window);
+     SDL_DestroyWindow((*ppu).window);
 
      // Clean up
      SDL_Quit();
+}
 
-     return window;
+void update_scroll(struct PPU* ppu, unsigned char sx, unsigned char sy){
+     (*ppu).SX = sx;
+     (*ppu).SX = sy;
+}
+
+void update_background(struct PPU* ppu, unsigned int* pixels){
+     memcpy((*ppu).background, pixels, BACKGROUND_RES);
+}
+
+void update_line(struct PPU* ppu, unsigned char line){
+     unsigned int i;
+
+     unsigned int offset = (((*ppu).SY+line)%256)*256;
+     for(i = 0; i < PPU_X; ++i){
+          (*ppu).pixels[line*PPU_X + i] = (*ppu).background[(offset+((*ppu).SX+i)%256)];
+
+     if(line*PPU_X + i > 160*144){
+          printf("\nhey que nos hemos pasao, line=%d i=%d",line,i);
+     }
+     }
+}
+
+void update_ppu(struct PPU* ppu){
+
+     SDL_UpdateTexture((*ppu).texture, NULL, (*ppu).pixels, 160 * sizeof(unsigned int));
+
+     SDL_RenderClear((*ppu).renderer);
+     SDL_RenderCopy((*ppu).renderer, (*ppu).texture, NULL, NULL);
+     SDL_RenderPresent((*ppu).renderer);
 }
