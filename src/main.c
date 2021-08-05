@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "tools.h"
 #include "cpu.h"
 #include "mmu.h"
@@ -22,7 +23,7 @@ void patches(struct CPU* cpu, struct MMU* mmu) {
  * Main routine of our program.
  *
  * ONLY FOR TESTING PURPOSES.
- *
+ *y
  * - Args:
  *     1.- gameboy ROM path.
  */
@@ -75,8 +76,6 @@ int main(int argc, char *argv[]) {
     }
 */
 
-//
-
 
     unsigned int * new_background = calloc(256*256, sizeof(unsigned int));
 
@@ -85,7 +84,7 @@ int main(int argc, char *argv[]) {
 
     // create cross in background
     int i,j;
-    for(i = 0; i < 256; ++i)
+   for(i = 0; i < 256; ++i)
          for(j = 0; j < 256; ++j)
               if((i == j) || (255-i == j)) new_background[j*256+i] = palette[0];
 
@@ -93,19 +92,27 @@ int main(int argc, char *argv[]) {
 
     create_window(&ppu);
 
-    unsigned char pos = 0;
 
-    //while(1){
-        pos = 180;
+    unsigned char pos = 0;
+    pos = 0;
+    SDL_Event evt;
+    while(1){
+
+        while(SDL_PollEvent(&evt)){
+            /* Handle event */
+        }
         ppu.SY = pos;
+        ppu.SX = pos;
         // frame
         for(i = 0; i < 144; ++i){
-             //ppu.SX = (sin(i)+1)*4;
+             ppu.SX = (sin(i)+1)*4;
              update_line(&ppu, i);
         }
         update_ppu(&ppu);
-        //sleep(3);
-        scanf(&i);
-        //}
+
+        SDL_Delay(30);
+        pos++;
+        //scanf(&i);
+    }
     return  0;
 }

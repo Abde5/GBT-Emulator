@@ -60,19 +60,23 @@ void update_line(struct PPU* ppu, unsigned char line){
 
      unsigned int offset = (((*ppu).SY+line)%256)*256;
      for(i = 0; i < PPU_X; ++i){
-          (*ppu).pixels[line*PPU_X + i] = (*ppu).background[(offset+((*ppu).SX+i)%256)];
+         (*ppu).pixels[line*PPU_X + i] = (*ppu).background[(offset+((*ppu).SX+i)%256)];
 
-     if(line*PPU_X + i > 160*144){
-          printf("\nhey que nos hemos pasao, line=%d i=%d",line,i);
-     }
+         if((offset+((*ppu).SX+i)%256) > 255*255){
+              printf("\nhey que nos hemos pasao, SX=%d, SY=%d,line=%d i=%d",(*ppu).SX,(*ppu).SY,line,i);
+         }
      }
 }
 
 void update_ppu(struct PPU* ppu){
 
+     //printf("before UpdateTexture\n");
      SDL_UpdateTexture((*ppu).texture, NULL, (*ppu).pixels, 160 * sizeof(unsigned int));
-
+     //printf("after UpdateTexture\n");
      SDL_RenderClear((*ppu).renderer);
+     //printf("after RenderClear\n");
      SDL_RenderCopy((*ppu).renderer, (*ppu).texture, NULL, NULL);
+     //printf("after RenderCopy\n");
      SDL_RenderPresent((*ppu).renderer);
+     //printf("after RenderPresent\n");
 }
