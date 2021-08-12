@@ -50,31 +50,6 @@ int main(int argc, char *argv[]) {
     cpu.tick= 0;
 
     //////////////////////////////
-/*
-    char* var;
-    int instruction_nb = 0;
-    // TESTING instructions
-    while(1){
-        instruction_nb ++;
-        printf("%04x: ",cpu.PC);
-        unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
-
-        printf("\t(opcode: %02x)\t",next_opcode);
-        //printf("%x: ",next_opcode);
-        //printf("\nPC: %x", cpu.PC);
-        //printf("\nDecoded instruction: %x", next_opcode);
-        //printf("\nNumber of instruction: %x", instruction_nb);
-        CPU_decode_execute(next_opcode, &cpu, &mmu);
-        //usleep(10000);
-        printf("\n");
-
-#ifdef DEBUG
-        printf("DEBUG: Value of HL: %04x\n", cpu.HL);
-#endif
-        //printf("\tB register: %x\n", cpu.B);
-        patches(&cpu,&mmu);
-    }
-*/
 
 
     unsigned int * new_background = calloc(256*256, sizeof(unsigned int));
@@ -84,35 +59,54 @@ int main(int argc, char *argv[]) {
 
     // create cross in background
     int i,j;
-   for(i = 0; i < 256; ++i)
-         for(j = 0; j < 256; ++j)
+    for(i = 0; i < 256; ++i){
+         for(j = 0; j < 256; ++j){
+              if((i == 128) || (j == 128)) new_background[j*256+i] = palette[2];
               if((i == j) || (255-i == j)) new_background[j*256+i] = palette[0];
+              if((i == (j+5)) || (255-i == j+5)) new_background[j*256+i] = palette[1];
+              if((i == (j-5)) || (255-i == j-5)) new_background[j*256+i] = palette[1];
+         }
+    }
 
     update_background(&ppu, new_background);
 
     create_window(&ppu);
 
-
     unsigned char pos = 0;
     pos = 0;
+    double inc = 0;
     SDL_Event evt;
-    while(1){
+    unsigned int instruction_nb;
 
+    // -------- MAIN LOOP --------
+    while(1){
+        instruction_nb ++;
+        unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
+        CPU_decode_execute(next_opcode, &cpu, &mmu);
+
+#ifdef DEBUG
+        printf("DEBUG: Value of HL: %04x\n", cpu.HL);
+#endif
+        //printf("\tB register: %x\n", cpu.B);
+        patches(&cpu,&mmu);
+
+
+        // GRAPHICAL
         while(SDL_PollEvent(&evt)){
             /* Handle event */
         }
-        ppu.SY = pos;
-        ppu.SX = pos;
+        ppu.SY = (unsigned char)((sin(inc)+1)*128);
+        ppu.SX = (unsigned char)((cos(inc)+1)*128);
         // frame
-        for(i = 0; i < 144; ++i){
-             ppu.SX = (sin(i)+1)*4;
+        for(i = 0; i < PPU_Y; ++i){
+             //ppu.SX = (sin(i*5)+1);
              update_line(&ppu, i);
         }
         update_ppu(&ppu);
 
         SDL_Delay(30);
         pos++;
-        //scanf(&i);
+        inc += 0.02;
     }
     return  0;
 }
