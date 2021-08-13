@@ -42,6 +42,9 @@ struct CPU {
     unsigned short SP;
     unsigned short PC;
 
+    // boolean
+    unsigned short interrupt;
+
     unsigned short tick;
 };
 

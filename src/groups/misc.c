@@ -83,7 +83,8 @@ void DiF3(struct CPU* cpu, struct MMU* mmu)
     printf("DI");
 #endif
     // Cycles: 4, (Z N H C): - - - -
-    printf("Not implemented! (DiF3)");
+    (*cpu).interrupt = 0;
+    (*cpu).tick += 4;
 }
 
 void EiFB(struct CPU* cpu, struct MMU* mmu)
@@ -93,7 +94,8 @@ void EiFB(struct CPU* cpu, struct MMU* mmu)
     printf("EI");
 #endif
     // Cycles: 4, (Z N H C): - - - -
-    printf("Not implemented! (EiFB)");
+    (*cpu).interrupt = 1;
+    (*cpu).tick += 4;
 }
 
 void PrefCB(struct CPU* cpu, struct MMU* mmu){

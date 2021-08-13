@@ -9,13 +9,14 @@
 #include "cpu.h"
 #include "mmu.h"
 #include "ppu.h"
+#include "groups/transfer.h"
 
 
 #define TETRIS_SIZE 32768
 
 void patches(struct CPU* cpu, struct MMU* mmu) {
-     if (cpu->PC == 0x0064) mmu_write(mmu, 0xff44, 0x90);
-     else if (cpu->PC == 0x0233) mmu_write(mmu, 0xff44, 0x94);
+     //if (cpu->PC == 0x0064) mmu_write(mmu, 0xff44, 0x90);
+     if (cpu->PC == 0x0233) mmu_write(mmu, 0xff44, 0x94);
      else if (cpu->PC == 0x2828) mmu_write(mmu, 0xff44, 0x91);
 }
 
@@ -23,7 +24,7 @@ void patches(struct CPU* cpu, struct MMU* mmu) {
  * Main routine of our program.
  *
  * ONLY FOR TESTING PURPOSES.
- *y
+ *
  * - Args:
  *     1.- gameboy ROM path.
  */
@@ -47,7 +48,8 @@ int main(int argc, char *argv[]) {
 
     cpu.SP = 0xE000;
     cpu.PC = 0x0100;
-    cpu.tick= 0;
+    cpu.tick = 0;
+    cpu.interrupt = 1;
 
     //////////////////////////////
 
@@ -59,16 +61,21 @@ int main(int argc, char *argv[]) {
 
     // create cross in background
     int i,j;
-    for(i = 0; i < 256; ++i){
+    /*for(i = 0; i < 256; ++i){
          for(j = 0; j < 256; ++j){
               if((i == 128) || (j == 128)) new_background[j*256+i] = palette[2];
               if((i == j) || (255-i == j)) new_background[j*256+i] = palette[0];
               if((i == (j+5)) || (255-i == j+5)) new_background[j*256+i] = palette[1];
               if((i == (j-5)) || (255-i == j-5)) new_background[j*256+i] = palette[1];
          }
+         }*/
+
+    for (i=0; i < 1024; ++i){
+         update_background_sprite(&ppu, &mmu, i, i);
     }
 
-    update_background(&ppu, new_background);
+    unsigned int sprite[64];
+    load_sprite(&mmu,0,sprite);
 
     create_window(&ppu);
 
@@ -77,34 +84,43 @@ int main(int argc, char *argv[]) {
     double inc = 0;
     SDL_Event evt;
     unsigned int instruction_nb;
-
+    unsigned int current_ticks;
+    unsigned int updated_ticks;
     // -------- MAIN LOOP --------
     while(1){
+        current_ticks = cpu.tick;
         instruction_nb ++;
+#ifdef DEBUG
+        printf("%04x: ", cpu.PC);
+#endif
         unsigned char next_opcode = CPU_fetch(&cpu, &mmu);
         CPU_decode_execute(next_opcode, &cpu, &mmu);
-
 #ifdef DEBUG
-        printf("DEBUG: Value of HL: %04x\n", cpu.HL);
+        printf("\n");
 #endif
+        updated_ticks = cpu.tick - current_ticks;
+        ppu.timer += updated_ticks;
+//#ifdef DEBUG
+//        printf("DEBUG: Value of HL: %04x\n", cpu.HL);
+//#endif
         //printf("\tB register: %x\n", cpu.B);
         patches(&cpu,&mmu);
-
 
         // GRAPHICAL
         while(SDL_PollEvent(&evt)){
             /* Handle event */
         }
-        ppu.SY = (unsigned char)((sin(inc)+1)*128);
-        ppu.SX = (unsigned char)((cos(inc)+1)*128);
+        //printf("Color in 0x8002: %04x\n", mmu_read(&mmu, 0x8002));
+        //load_background_sprites(&ppu, &mmu);
+        //ppu.SY = (unsigned char)((sin(inc)+1)*128);
+        //ppu.SX = (unsigned char)((cos(inc)+1)*128);
         // frame
-        for(i = 0; i < PPU_Y; ++i){
-             //ppu.SX = (sin(i*5)+1);
-             update_line(&ppu, i);
-        }
-        update_ppu(&ppu);
 
-        SDL_Delay(30);
+        // update line each time
+
+        execute_ppu(&ppu, &mmu, &cpu);
+
+        //SDL_Delay(30);
         pos++;
         inc += 0.02;
     }

@@ -5,6 +5,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include "mmu.h"
+#include "cpu.h"
 
 
 #define PPU_X 160
@@ -21,6 +22,9 @@ struct PPU {
      unsigned int background[BACKGROUND_RES];
      unsigned char SY;
      unsigned char SX;
+     unsigned int timer;
+     unsigned char mode;
+     unsigned char VBlank;
 };
 
 unsigned int palette[4];
@@ -30,9 +34,12 @@ void destroy_ppu(struct PPU*);
 void update_scroll(struct PPU*, unsigned char, unsigned char);
 void update_background(struct PPU*, unsigned int*);
 void update_line(struct PPU*, unsigned char);
-void update_ppu(struct PPU*);
+void update_screen(struct PPU*);
+
+void execute_ppu(struct PPU* ppu, struct MMU* mmu, struct CPU* cpu);
 
 //-- sprite methods --
-void update_background_sprite(struct PPU*, struct MMU*, unsigned char sprite_nb, unsigned char position);
+void load_sprite(struct MMU* mmu, unsigned char sprite_nb, unsigned int* sprite);
+void update_background_sprite(struct PPU*, struct MMU*, unsigned char sprite_nb, unsigned int position);
 void load_background_sprites(struct PPU*, struct MMU*);
 #endif
