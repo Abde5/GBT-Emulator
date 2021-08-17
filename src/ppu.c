@@ -98,10 +98,23 @@ void execute_ppu(struct PPU* ppu, struct MMU* mmu, struct CPU* cpu){
                     (*ppu).mode = 0x01;
                     update_screen(ppu);
 
-                    // GENERATE interrupt VBlank
-                    printf("V-blank interrupt!\n");
-                    Push(&(*cpu).PC, cpu, mmu);
-                    (*cpu).PC = 0x40;
+                    if ((*cpu).interrupt){
+                        // GENERATE interrupt VBlank
+                        //printf("V-blank interrupt!\n");
+                        Push(&(*cpu).PC, cpu, mmu);
+                        (*cpu).PC = 0x40;
+                        // PRINT FIRST X LINES OF VRAM
+                        unsigned char i;
+                        unsigned char byte;
+                        //printf("\nVRAM: ");
+                        //for (i = 0; i < 28; ++i){
+                        //    byte = mmu_read(mmu, 0x8000+i);
+                        //    printf("%04x ", byte);
+                        //}
+                        //printf("\n");
+                    }
+                    //unsigned char input;
+                    //scanf("Press any button: %c",&input);
                }
                else{
                     (*ppu).mode = 0x02;
@@ -194,9 +207,19 @@ void load_background_sprites(struct PPU* ppu, struct MMU* mmu){
 
     unsigned int i;
     unsigned char sprite_nb;
+    //printf("Sprites:\n\t");
     for(i = 0; i < 1024; ++i){
         sprite_nb = mmu_read(mmu, 0x9800+i);
+        //printf("%04x ",sprite_nb);
+        //if(i % 8 == 0){
+             //printf("\n\t");
+             //}
         update_background_sprite(ppu, mmu, sprite_nb, i);
         //if(sprite_nb != 0) printf("SPRITE_NB %d\n", sprite_nb);
     }
+    //printf("\n");
+
+    //for (i=0; i < 1024; ++i){
+    //     update_background_sprite(ppu, mmu, i, i);
+    //}
 }

@@ -446,6 +446,8 @@ void RetiD9(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 16, (Z N H C): - - - -
     // TODO
-    printf("Not implemented! (RetiD9)");
+    Pop(&(*cpu).PC, cpu, mmu);
+    (*cpu).interrupt = 1;
+    (*cpu).tick += 4;
 }
 

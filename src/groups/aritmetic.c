@@ -531,7 +531,15 @@ void AddE8(struct CPU* cpu, struct MMU* mmu)
 #endif
     // Cycles: 16, (Z N H C): 0 0 H C
     // TODO -> next time
-    printf("Not implemented! (AddE8)");
+    unsigned char membyte = mmu_read(mmu,(*cpu).PC++);
+    unsigned short membyte_short = (unsigned short)membyte;
+    if (membyte >= 0){
+         Add_16(&(*cpu).SP, &membyte_short, cpu);
+    } else {
+        Sub_16_8(&(*cpu).SP, &membyte, cpu);
+    }
+
+    (*cpu).F = (*cpu).F & (~ H_flag) & (~ C_flag);
 }
 
 void Daa27(struct CPU* cpu, struct MMU* mmu)
@@ -746,6 +754,34 @@ void Sub_8(unsigned char* A, unsigned char* B, struct CPU* cpu) {
     }
 
     (*cpu).F = carry | half_carry | zero | N_flag;
+}
+
+void Sub_16_8(unsigned short* A, unsigned char* B, struct CPU* cpu) {
+     // bytes with only 4 lower bits
+     unsigned char A_4 = *A & 0x0F;
+     unsigned char B_4 = *B & 0x0F;
+
+     // update timer
+     (*cpu).tick+=4;
+
+     // update flags
+     unsigned char carry = 0x0;
+     if ((*B) > ((*A) & 0xFF)){
+          carry = C_flag;
+     }
+     unsigned char half_carry = 0x0;
+     if (B_4 > A_4){
+          half_carry = H_flag;
+     }
+
+     *A -= *B;
+
+     unsigned char zero = 0x0;
+     if (!(*A)){
+          zero = Z_flag;
+     }
+
+     (*cpu).F = carry | half_carry | zero | N_flag;
 }
 
 void Sub90(struct CPU* cpu, struct MMU* mmu)

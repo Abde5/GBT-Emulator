@@ -165,4 +165,6 @@ void CpBE(struct CPU* cpu, struct MMU* mmu);
 void CpBF(struct CPU* cpu, struct MMU* mmu);
 void CpFE(struct CPU* cpu, struct MMU* mmu);
 
+void Sub_16_8(unsigned short* A, unsigned char* B, struct CPU* cpu);
+
 #endif // ARITMETIC_H
